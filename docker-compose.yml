@@ -46,7 +46,7 @@ services:
     ports:
     - "10080:80"
     - "10022:22"
-    - "443":"443"
+    - "443:443"
     volumes:
     - /srv/docker/gitlab/gitlab:/home/git/data:Z
     - /srv/docker/gitlab/logs:/var/log/gitlab
