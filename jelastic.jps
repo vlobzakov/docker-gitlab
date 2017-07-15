@@ -99,7 +99,11 @@
         }],
         "generate-ssl": {
             "cmd[cp]": [
-                "cd /srv/docker/gitlab/certs && openssl req -nodes -newkey rsa:4096 -keyout registry-auth.key -out registry-auth.csr -subj \"/CN=${env.domain}\" && openssl x509 -in registry-auth.csr -out registry-auth.crt -req -signkey registry-auth.key -days 3650"
+                "mkdir -p /srv/docker/gitlab/certs && cd /srv/docker/gitlab/certs && openssl req -nodes -newkey rsa:4096 -keyout registry-auth.key -out registry-auth.csr -subj \"/CN=${env.domain}\" && openssl x509 -in registry-auth.csr -out registry-auth.crt -req -signkey registry-auth.key -days 3650", 
+                "yum install ca-certificates -y",
+                "update-ca-trust force-enable",
+                "cp /srv/docker/gitlab/certs/registry-auth.crt /etc/pki/ca-trust/source/anchors/",
+                "update-ca-trust extract"
             ]
         },
         "add-runner": {
