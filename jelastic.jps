@@ -99,9 +99,7 @@
         }],
         "generate-ssl": {
             "cmd[cp]": [
-                "cd /srv/docker/gitlab/certs",
-                "openssl req -nodes -newkey rsa:4096 -keyout registry-auth.key -out registry-auth.csr -subj \"/CN=${env.domain}\"",
-                "openssl x509 -in registry-auth.csr -out registry-auth.crt -req -signkey registry-auth.key -days 3650"
+                "cd /srv/docker/gitlab/certs && openssl req -nodes -newkey rsa:4096 -keyout registry-auth.key -out registry-auth.csr -subj \"/CN=${env.domain}\" && openssl x509 -in registry-auth.csr -out registry-auth.crt -req -signkey registry-auth.key -days 3650"
             ]
         },
         "add-runner": {
