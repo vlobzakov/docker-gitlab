@@ -31,7 +31,7 @@ services:
     environment:
     - REGISTRY_LOG_LEVEL=info
     - REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/registry
-    - REGISTRY_AUTH_TOKEN_REALM=http://docker124406-env-0728811.demo.jelastic.com:10080/jwt/auth
+    - REGISTRY_AUTH_TOKEN_REALM=http://${REGISTRY_HOST}/jwt/auth
     - REGISTRY_AUTH_TOKEN_SERVICE=container_registry
     - REGISTRY_AUTH_TOKEN_ISSUER=gitlab-issuer
     - REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE=/certs/registry-auth.crt
@@ -52,7 +52,7 @@ services:
     - /srv/docker/gitlab/certs:/certs 
     environment:
     - GITLAB_REGISTRY_ENABLED=true
-    - GITLAB_REGISTRY_HOST=docker124406-env-0728811.demo.jelastic.com
+    - GITLAB_REGISTRY_HOST=${REGISTRY_HOST}
     - GITLAB_REGISTRY_POST=5000
     - GITLAB_REGISTRY_API_URL=http://registry:5000
     - GITLAB_REGISTRY_ISSUER=gitlab-issuer
