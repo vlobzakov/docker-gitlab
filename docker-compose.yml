@@ -60,8 +60,8 @@ services:
     - GITLAB_REGISTRY_CERT_PATH=/certs/registry-auth.crt
     - GITLAB_REGISTRY_KEY_PATH=/certs/registry-auth.key
 
-    - SSL_REGISTRY_KEY_PATH=/certs/registry.key
-    - SSL_REGISTRY_CERT_PATH=/certs/registry.crt
+    - SSL_REGISTRY_KEY_PATH=/certs/registry-auth.key
+    - SSL_REGISTRY_CERT_PATH=/certs/registry-auth.crt
 
     - DEBUG=false
 
@@ -78,8 +78,8 @@ services:
     - TZ=Asia/Kolkata
     - GITLAB_TIMEZONE=Kolkata
 
-    - GITLAB_HTTPS=false
-    - SSL_SELF_SIGNED=false
+    - GITLAB_HTTPS=true
+    - SSL_SELF_SIGNED=true
 
     - GITLAB_HOST=docker124406-env-0728811.demo.jelastic.com
     - GITLAB_PORT=10080
