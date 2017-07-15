@@ -86,12 +86,18 @@
     ],
     "actions": {
         "set-vars": [{
-            "cmd[cp, runner]": "echo REGISTRY_HOST=${env.domain} >> /.jelenv"
+            "cmd[cp, runner]": [
+                "echo REGISTRY_HOST=${env.domain} >> /.jelenv",
+                "echo CI_SERVER_URL=${env.domain} >> /.jelenv",
+                "echo RUNNER_TOKEN=xxxxxx >> /.jelenv",
+                "echo RUNNER_DESCRIPTION=shell >> /.jelenv",
+                "echo RUNNER_EXECUTOR=shell >> /.jelenv"
+            ]
         }, {
             "api[cp]": "environment.control.RestartNodesByGroup",
             "api[runner]": "environment.control.RestartNodesByGroup"
         }],
-        "": {
+        "generate-ssl": {
             "cmd[cp]": [
                 "cd /srv/docker/gitlab/certs",
                 "openssl req -nodes -newkey rsa:4096 -keyout registry-auth.key -out registry-auth.csr -subj \"/CN=${env.domain}\"",
