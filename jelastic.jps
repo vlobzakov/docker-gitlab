@@ -88,7 +88,7 @@
         "set-vars": [{
             "cmd[cp, runner]": [
                 "echo REGISTRY_HOST=${env.domain} >> /.jelenv",
-                "echo CI_SERVER_URL=${env.domain} >> /.jelenv",
+                "echo CI_SERVER_URL=http://${env.domain}/ci >> /.jelenv",
                 "echo RUNNER_TOKEN=xxxxxx >> /.jelenv",
                 "echo RUNNER_DESCRIPTION=shell >> /.jelenv",
                 "echo RUNNER_EXECUTOR=shell >> /.jelenv"
