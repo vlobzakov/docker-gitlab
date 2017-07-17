@@ -3,61 +3,32 @@
     "id": "docker-engine",
     "baseUrl": "https://raw.githubusercontent.com/jelastic-jps/docker-native/master/addons",
     "description": {
-        "text": "/text/description-engine.md",
-        "short": "Docker Standalone Engine"
+        "text": "Master GitLab + Containers Registry + 2 Runners (Shell and Docker)",
+        "short": "GitLab DevOps Package"
     },
-    "logo": "../images/docker-engine-logo.png",
-    "name": "Gitlab",
+    "logo": "https://goo.gl/epR2KT",
+    "name": "GitLab DevOps",
     "region": "vz7",
     "globals": {
         "upload-ssh-keys": "${baseUrl}/scripts/upload-ssh-keys.js"
     },
+    "globals": {
+        "RUNNER_TOKEN": "${fn.password(32)}",
+        "GITLAB_SECRETS_BASE": "${fn.password(64)}",
+        "ROOT_PASSWORD": "${fn.password(10)}"
+    },
     "settings": {
         "fields": [{
-            "type": "spinner",
-            "name": "nodes",
-            "caption": "Nodes",
-            "min": 1,
-            "max": 10,
-            "default": 1
-        }, {
-            "name": "mode",
-            "type": "radio-fieldset",
-            "values": {
-                "clean": "Clean Engine",
-                "deploy": "Deploy Compose YML",
-                "swarm": "Connect to Swarm"
-            },
-            "default": "clean",
-            "showIf": {
-                "deploy": {
-                    "name": "repo",
-                    "type": "string",
-                    "caption": "Gitlab",
-                    "default": "https://github.com/jelastic/docker-gitlab.git",
-                    "required": true,
-                    "vtype": "url"
-                },
-                "swarm": [{
-                    "name": "token",
-                    "type": "string",
-                    "caption": "Join Token ",
-                    "default": "",
-                    "required": true
-                }, {
-                    "name": "host",
-                    "type": "string",
-                    "caption": "Host IP",
-                    "default": "",
-                    "required": true,
-                    "regex": "^(?=\\d+\\.\\d+\\.\\d+\\.\\d+$)(?:(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\\.?){4}$",
-                    "regexText": "Invalid IP address format"
-                }]
-            }
+            "name": "repo",
+            "type": "string",
+            "caption": "Package Repo",
+            "default": "https://github.com/jelastic/docker-gitlab.git",
+            "required": true,
+            "vtype": "url"
         }]
     },
     "nodes": [{
-        "count": "${settings.nodes}",
+        "count": "1",
         "cloudlets": 32,
         "image": "jelastic/docker-ce-compose",
         "nodeGroup": "cp",
@@ -78,20 +49,24 @@
     "onInstall": [
         "set-vars",
         "generate-ssl",
-        "add-runner",
         "deploy",
-        "connect-to-swarm",
-        "re-import-button",
-        "upload-ssh-keys"
+        "add-runner"
     ],
     "actions": {
         "set-vars": [{
-            "cmd[cp, runner]": [
+            "cmd[runner]": [
                 "echo REGISTRY_HOST=${env.domain} >> /.jelenv",
                 "echo CI_SERVER_URL=http://${env.domain}/ci >> /.jelenv",
-                "echo RUNNER_TOKEN=xxxxxx >> /.jelenv",
-                "echo RUNNER_DESCRIPTION=shell >> /.jelenv",
-                "echo RUNNER_EXECUTOR=shell >> /.jelenv"
+                "echo RUNNER_TOKEN=${globals.RUNNER_TOKEN} >> /.jelenv",
+                "echo DOCKER_IMAGE=docker:dind >> /.jelenv",
+                "printf '{\n\t\"insecure-registries\" : [ \"${env.domain}:5000\" ]\n}\n' > /etc/docker/daemon.json",
+                "service docker restart"
+            ],
+            "cmd[cp]": [
+                "echo REGISTRY_HOST=${env.domain} >> /.jelenv",
+                "echo RUNNER_TOKEN=${globals.RUNNER_TOKEN} >> /.jelenv",
+                "echo GITLAB_SECRETS_BASE=${globals.GITLAB_SECRETS_BASE} >> /.jelenv",
+                "echo ROOT_PASSWORD=${globals.ROOT_PASSWORD} >> /.jelenv"
             ]
         }, {
             "api[cp]": "environment.control.RestartNodesByGroup",
@@ -99,7 +74,7 @@
         }],
         "generate-ssl": {
             "cmd[cp]": [
-                "mkdir -p /srv/docker/gitlab/certs && cd /srv/docker/gitlab/certs && openssl req -nodes -newkey rsa:4096 -keyout registry-auth.key -out registry-auth.csr -subj \"/CN=${env.domain}\" && openssl x509 -in registry-auth.csr -out registry-auth.crt -req -signkey registry-auth.key -days 3650", 
+                "mkdir -p /srv/docker/gitlab/certs && cd /srv/docker/gitlab/certs && openssl req -nodes -newkey rsa:4096 -keyout registry-auth.key -out registry-auth.csr -subj \"/CN=${env.domain}\" && openssl x509 -in registry-auth.csr -out registry-auth.crt -req -signkey registry-auth.key -days 3650",
                 "yum install ca-certificates -y",
                 "update-ca-trust force-enable",
                 "cp /srv/docker/gitlab/certs/registry-auth.crt /etc/pki/ca-trust/source/anchors/",
@@ -107,49 +82,21 @@
             ]
         },
         "add-runner": {
-            "cmd[runner]": "docker run --name gitlab-ci-multi-runner -d --restart=always -v /srv/docker/gitlab-runner:/home/gitlab_ci_multi_runner/data -e='CI_SERVER_URL=$CI_SERVER_URL' -e='RUNNER_TOKEN=$RUNNER_TOKEN' -e='RUNNER_DESCRIPTION=myrunner' -e='RUNNER_EXECUTOR=shell' sameersbn/gitlab-ci-multi-runner:1.1.4-7"
+            "cmd[runner]": "docker run --name gitlab-ci-multi-runner -d --restart=always --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /srv/docker/gitlab-runner:/home/gitlab_ci_multi_runner/data -e=\"CI_SERVER_URL=$CI_SERVER_URL\" -e=\"RUNNER_TOKEN=$RUNNER_TOKEN\" -e=\"RUNNER_DESCRIPTION=docker\" -e=\"RUNNER_EXECUTOR=docker\" -e=\"RUNNER_DOCKER_IMAGE=$DOCKER_IMAGE\" digitallumberjack/docker-gitlab-ci-multi-runner"
         },
         "deploy": {
-            "if ('${settings.mode}' == 'deploy')": {
-                "install": {
-                    "jps": "${baseUrl}/docker-deploy.jps",
-                    "settings": {
-                        "repo": "${settings.repo}",
-                        "type": "compose"
-                    }
-                }
-            }
-        },
-        "connect-to-swarm": {
-            "if ('${settings.mode}' == 'swarm')": [{
-                "sleep": "10000"
-            }, {
-                "cmd[cp]": "docker swarm join --token ${settings.token} ${settings.host}:2377"
-            }]
-        },
-        "re-import-button": {
             "install": {
-                "jps": "${baseUrl}/re-import-ssh-keys.jps",
-                "nodeGroup": "cp",
+                "jps": "${baseUrl}/docker-deploy.jps",
                 "settings": {
-                    "upload-ssh-keys": "${globals.upload-ssh-keys}"
+                    "repo": "${settings.repo}",
+                    "type": "compose"
                 }
-            }
-        },
-        "upload-ssh-keys": {
-            "script": "/scripts/upload-ssh-keys.js"
-        },
-        "no-ssh-keys": {
-            "return": {
-                "type": "success",
-                "message": "/text/engine-success-no-ssh-keys.md",
-                "email": "/text/engine-success-no-ssh-keys.md"
             }
         }
     },
     "success": {
-        "text": "/text/engine-success.md",
-        "email": "/text/engine-success.md"
+        "text": "Password: ${globals.ROOT_PASSWORD}",
+        "email": "Password: ${globals.ROOT_PASSWORD}"
     },
     "jpsVersion": "1.1"
 }
