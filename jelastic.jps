@@ -46,22 +46,30 @@
         "extip": "true",
         "env": {}
     }],
+    "onBeforeServiceScaleOut[runner]": {
+        "forEach(event.response.nodes)": {
+            "runner-setup": {
+                "id": "${@i.id}"
+            },
+            "add-runner": {
+                "id": "${@i.id}"
+            }
+        }
+    },
     "onInstall": [
         "set-vars",
         "generate-ssl",
-        "deploy",
-        "add-runner"
+        "deploy", {
+            "add-runner": {
+                "id": "runner"
+            }
+        }
     ],
     "actions": {
         "set-vars": [{
-            "cmd[runner]": [
-                "echo REGISTRY_HOST=${env.domain} >> /.jelenv",
-                "echo CI_SERVER_URL=http://${env.domain}/ci >> /.jelenv",
-                "echo RUNNER_TOKEN=${globals.RUNNER_TOKEN} >> /.jelenv",
-                "echo DOCKER_IMAGE=docker:dind >> /.jelenv",
-                "printf '{\n\t\"insecure-registries\" : [ \"${env.domain}:5000\" ]\n}\n' > /etc/docker/daemon.json",
-                "service docker restart"
-            ],
+            "runner-setup": {
+                "id": "runner"
+            },
             "cmd[cp]": [
                 "echo REGISTRY_HOST=${env.domain} >> /.jelenv",
                 "echo RUNNER_TOKEN=${globals.RUNNER_TOKEN} >> /.jelenv",
@@ -72,6 +80,16 @@
             "api[cp]": "environment.control.RestartNodesByGroup",
             "api[runner]": "environment.control.RestartNodesByGroup"
         }],
+        "runner-setup": {
+            "cmd[${this.id}]": [
+                "echo REGISTRY_HOST=${env.domain} >> /.jelenv",
+                "echo CI_SERVER_URL=http://${env.domain}/ci >> /.jelenv",
+                "echo RUNNER_TOKEN=${globals.RUNNER_TOKEN} >> /.jelenv",
+                "echo DOCKER_IMAGE=docker:dind >> /.jelenv",
+                "printf '{\n\t\"insecure-registries\" : [ \"${env.domain}:5000\" ]\n}\n' > /etc/docker/daemon.json",
+                "service docker restart"
+            ]
+        },
         "generate-ssl": {
             "cmd[cp]": [
                 "mkdir -p /srv/docker/gitlab/certs && cd /srv/docker/gitlab/certs && openssl req -nodes -newkey rsa:4096 -keyout registry-auth.key -out registry-auth.csr -subj \"/CN=${env.domain}\" && openssl x509 -in registry-auth.csr -out registry-auth.crt -req -signkey registry-auth.key -days 3650",
@@ -82,7 +100,7 @@
             ]
         },
         "add-runner": {
-            "cmd[runner]": "docker run --name gitlab-ci-multi-runner -d --restart=always --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /srv/docker/gitlab-runner:/home/gitlab_ci_multi_runner/data -e=\"CI_SERVER_URL=$CI_SERVER_URL\" -e=\"RUNNER_TOKEN=$RUNNER_TOKEN\" -e=\"RUNNER_DESCRIPTION=docker\" -e=\"RUNNER_EXECUTOR=docker\" -e=\"RUNNER_DOCKER_IMAGE=$DOCKER_IMAGE\" digitallumberjack/docker-gitlab-ci-multi-runner"
+            "cmd[${this.id}]": "docker run --name gitlab-ci-multi-runner -d --restart=always --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /srv/docker/gitlab-runner:/home/gitlab_ci_multi_runner/data -e=\"CI_SERVER_URL=$CI_SERVER_URL\" -e=\"RUNNER_TOKEN=$RUNNER_TOKEN\" -e=\"RUNNER_DESCRIPTION=docker\" -e=\"RUNNER_EXECUTOR=docker\" -e=\"RUNNER_DOCKER_IMAGE=$DOCKER_IMAGE\" digitallumberjack/docker-gitlab-ci-multi-runner"
         },
         "deploy": {
             "install": {
