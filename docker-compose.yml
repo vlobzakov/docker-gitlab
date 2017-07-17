@@ -58,6 +58,9 @@ services:
     - GITLAB_REGISTRY_API_URL=http://registry:5000
     - GITLAB_REGISTRY_ISSUER=gitlab-issuer
 
+    - GITLAB_HTTPS=true
+    - SSL_SELF_SIGNED=true
+
     - SSL_KEY_PATH=/certs/registry-auth.key
     - SSL_CERTIFICATE_PATH=/certs/registry-auth.crt
     - SSL_DHPARAM_PATH=/certs/dhparam.pem
@@ -82,9 +85,6 @@ services:
 
     - TZ=Asia/Kolkata
     - GITLAB_TIMEZONE=Kolkata
-
-    - GITLAB_HTTPS=false
-    - SSL_SELF_SIGNED=false
 
     - GITLAB_HOST=${REGISTRY_HOST}
     - GITLAB_PORT=80
