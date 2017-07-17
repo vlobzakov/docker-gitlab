@@ -3,7 +3,7 @@
     "id": "docker-engine",
     "baseUrl": "https://raw.githubusercontent.com/jelastic-jps/docker-native/master/addons",
     "description": {
-        "text": "Master GitLab + Containers Registry + 2 Runners (Shell and Docker)",
+        "text": "Master GitLab + Containers Registry + Runner",
         "short": "GitLab DevOps Package"
     },
     "logo": "https://goo.gl/epR2KT",
