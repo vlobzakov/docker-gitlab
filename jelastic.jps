@@ -90,7 +90,7 @@
                 "echo RUNNER_TOKEN=${globals.RUNNER_TOKEN} >> /.jelenv",
                 "echo GITLAB_SECRETS_BASE=${globals.GITLAB_SECRETS_BASE} >> /.jelenv",
                 "echo ROOT_PASSWORD=${globals.ROOT_PASSWORD} >> /.jelenv",
-                "echo ROOT_PASSWORD=${globals.HTTP_SECRET} >> /.jelenv"
+                "echo HTTP_SECRET=${globals.HTTP_SECRET} >> /.jelenv"
             ]
         }, {
             "restartNodes": [{
