@@ -15,7 +15,8 @@
     "globals": {
         "RUNNER_TOKEN": "${fn.password(32)}",
         "GITLAB_SECRETS_BASE": "${fn.password(64)}",
-        "ROOT_PASSWORD": "${fn.password(10)}"
+        "ROOT_PASSWORD": "${fn.password(10)}",
+        "HTTP_SECRET": "${fn.password(10)}"
     },
     "settings": {
         "fields": [{
@@ -51,7 +52,7 @@
             "/srv/docker/gitlab-runner/certs"
         ],
         "volumeMounts": {
-            "srv/docker/gitlab-runner/certs": {
+            "/srv/docker/gitlab-runner/certs": {
                 "sourcePath": "/srv/docker/gitlab/certs",
                 "sourceNodeGroup": "cp",
                 "readOnly": true
@@ -73,7 +74,8 @@
         "set-vars",
         "deploy", {
             "add-runner": {
-                "id": "runner"
+                "id": "runner",
+                "nodeGroup": "runner"
             }
         }
     ],
@@ -83,18 +85,22 @@
                 "id": "runner"
             },
             "cmd[cp]": [
+                "echo GITLAB_HOST=${env.domain} >> /.jelenv",
                 "echo REGISTRY_HOST=${env.domain} >> /.jelenv",
                 "echo RUNNER_TOKEN=${globals.RUNNER_TOKEN} >> /.jelenv",
                 "echo GITLAB_SECRETS_BASE=${globals.GITLAB_SECRETS_BASE} >> /.jelenv",
-                "echo ROOT_PASSWORD=${globals.ROOT_PASSWORD} >> /.jelenv"
+                "echo ROOT_PASSWORD=${globals.ROOT_PASSWORD} >> /.jelenv",
+                "echo ROOT_PASSWORD=${globals.HTTP_SECRET} >> /.jelenv"
             ]
         }, {
-            "api[cp]": "environment.control.RestartNodesByGroup",
-            "api[runner]": "environment.control.RestartNodesByGroup"
+            "restartNodes": [{
+                "nodeGroup": "cp"
+            }, {
+                "nodeGroup": "runner"
+            }]
         }],
         "runner-setup": {
             "cmd[${this.id}]": [
-                "echo REGISTRY_HOST=${env.domain} >> /.jelenv",
                 "echo CI_SERVER_URL=https://${env.domain}/ci >> /.jelenv",
                 "echo RUNNER_TOKEN=${globals.RUNNER_TOKEN} >> /.jelenv",
                 "echo DOCKER_IMAGE=docker:dind >> /.jelenv",
@@ -103,7 +109,12 @@
         },
         "install-ssl": [{
             "cmd[cp]": [
-                "mkdir -p /srv/docker/gitlab/certs && cd /srv/docker/gitlab/certs && openssl req -nodes -newkey rsa:4096 -keyout registry-auth.key -out registry-auth.csr -subj \"/CN=${env.domain}\" && openssl x509 -in registry-auth.csr -out registry-auth.crt -req -signkey registry-auth.key -days 3650 && openssl dhparam -out dhparam.pem 2048 && chmod 400 registry-auth.key",
+                "mkdir -p /srv/docker/gitlab/certs",
+                "cd /srv/docker/gitlab/certs",
+                "openssl req -nodes -newkey rsa:4096 -keyout registry-auth.key -out registry-auth.csr -subj \"/CN=${env.domain}\"",
+                "openssl x509 -in registry-auth.csr -out registry-auth.crt -req -signkey registry-auth.key -days 3650",
+                "openssl dhparam -out dhparam.pem 2048",
+                "chmod 400 registry-auth.key",
                 "cp /srv/docker/gitlab/certs/registry-auth.crt /srv/docker/gitlab/certs/ca.crt"
             ]
         }, {
