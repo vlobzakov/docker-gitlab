@@ -23,7 +23,7 @@
             "name": "repo",
             "type": "string",
             "caption": "Package Repo",
-            "default": "https://github.com/jelastic/docker-gitlab.git",
+            "default": "https://github.com/sych74/docker-gitlab.git",
             "required": true,
             "vtype": "url"
         }]
@@ -114,7 +114,6 @@
                 "openssl req -nodes -newkey rsa:4096 -keyout registry-auth.key -out registry-auth.csr -subj \"/CN=${env.domain}\"",
                 "openssl x509 -in registry-auth.csr -out registry-auth.crt -req -signkey registry-auth.key -days 3650",
                 "openssl dhparam -out dhparam.pem 2048",
-                "chmod 400 registry-auth.key",
                 "cp /srv/docker/gitlab/certs/registry-auth.crt /srv/docker/gitlab/certs/ca.crt"
             ]
         }, {
