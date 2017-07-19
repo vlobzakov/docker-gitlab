@@ -34,7 +34,10 @@
         "extip": "true",
         "volumes": [
             "/srv/docker/gitlab/certs"
-        ]
+        ],
+        "env": {
+            "JELASTIC_EXPOSE": "10080"
+        }
     }, {
         "count": "1",
         "cloudlets": 32,
