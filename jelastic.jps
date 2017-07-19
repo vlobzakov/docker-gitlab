@@ -32,9 +32,6 @@
         "nodeGroup": "cp",
         "displayName": "Master",
         "extip": "true",
-        "env": {
-            "JELASTIC_EXPOSE": "10080"
-        },
         "volumes": [
             "/srv/docker/gitlab/certs"
         ]
@@ -44,7 +41,6 @@
         "image": "jelastic/docker-ce",
         "nodeGroup": "runner",
         "displayName": "Runner",
-        "env": {},
         "volumes": [
             "/srv/docker/gitlab-runner/certs"
         ],
