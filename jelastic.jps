@@ -85,12 +85,6 @@
                 "echo ROOT_PASSWORD=${globals.ROOT_PASSWORD} >> /.jelenv",
                 "echo HTTP_SECRET=${globals.HTTP_SECRET} >> /.jelenv"
             ]
-        }, {
-            "restartNodes": [{
-                "nodeGroup": "cp"
-            }, {
-                "nodeGroup": "runner"
-            }]
         }],
         "runner-setup": {
             "cmd[${this.id}]": [
