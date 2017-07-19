@@ -10,9 +10,6 @@
     "name": "GitLab DevOps",
     "region": "vz7",
     "globals": {
-        "upload-ssh-keys": "${baseUrl}/scripts/upload-ssh-keys.js"
-    },
-    "globals": {
         "RUNNER_TOKEN": "${fn.password(32)}",
         "GITLAB_SECRETS_BASE": "${fn.password(64)}",
         "ROOT_PASSWORD": "${fn.password(10)}",
@@ -23,7 +20,7 @@
             "name": "repo",
             "type": "string",
             "caption": "Package Repo",
-            "default": "https://github.com/sych74/docker-gitlab.git",
+            "default": "https://github.com/jelastic/docker-gitlab.git",
             "required": true,
             "vtype": "url"
         }]
