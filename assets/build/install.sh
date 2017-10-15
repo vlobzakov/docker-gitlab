@@ -13,7 +13,8 @@ BUILD_DEPENDENCIES="gcc g++ make patch pkg-config cmake paxctl \
   libc6-dev ruby${RUBY_VERSION}-dev \
   libmysqlclient-dev libpq-dev zlib1g-dev libyaml-dev libssl-dev \
   libgdbm-dev libreadline-dev libncurses5-dev libffi-dev \
-  libxml2-dev libxslt-dev libcurl4-openssl-dev libicu-dev"
+  libxml2-dev libxslt-dev libcurl4-openssl-dev libicu-dev \
+  gettext"
 
 ## Execute a command as GITLAB_USER
 exec_as_git() {
@@ -27,6 +28,19 @@ exec_as_git() {
 # install build dependencies for gem installation
 apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get install -y ${BUILD_DEPENDENCIES}
+
+# Install RE2 library wich became dependencie since 9.3.8 version
+# https://gitlab.com/gitlab-org/gitlab-ce/issues/35342
+DEBIAN_FRONTEND=noninteractive apt-get install -y checkinstall
+cd /tmp
+git clone https://github.com/google/re2.git
+cd re2/ && make && make test
+checkinstall -D --install=no -y --pkgname=re2 --pkgversion=1-current
+dpkg -i re2_1-current-1_amd64.deb
+ldconfig
+cd -
+rm -rf /tmp/re2
+DEBIAN_FRONTEND=noninteractive apt-get purge -y --auto-remove checkinstall
 
 # https://en.wikibooks.org/wiki/Grsecurity/Application-specific_Settings#Node.js
 paxctl -Cm `which nodejs`
@@ -149,12 +163,16 @@ exec_as_git cp ${GITLAB_INSTALL_DIR}/config/database.yml.mysql ${GITLAB_INSTALL_
 
 # Installs nodejs packages required to compile webpack
 exec_as_git yarn install --production --pure-lockfile
+exec_as_git yarn add ajv@^4.0.0
 
 echo "Compiling assets. Please be patient, this could take a while..."
 exec_as_git bundle exec rake gitlab:assets:compile USE_DB=false SKIP_STORAGE_VALIDATION=true
 
 # remove auto generated ${GITLAB_DATA_DIR}/config/secrets.yml
 rm -rf ${GITLAB_DATA_DIR}/config/secrets.yml
+
+# remove gitlab shell and workhorse secrets
+rm -f ${GITLAB_INSTALL_DIR}/.gitlab_shell_secret ${GITLAB_INSTALL_DIR}/.gitlab_workhorse_secret
 
 exec_as_git mkdir -p ${GITLAB_INSTALL_DIR}/tmp/pids/ ${GITLAB_INSTALL_DIR}/tmp/sockets/
 chmod -R u+rwX ${GITLAB_INSTALL_DIR}/tmp
