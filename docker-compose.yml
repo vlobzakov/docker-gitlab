@@ -15,11 +15,11 @@ services:
     volumes:
     - /srv/docker/gitlab/postgresql:/var/lib/postgresql:Z
     environment:
-    - DB_USER=gitlab
-    - DB_PASS=password
+    - DB_USER=${DB_USER}
+    - DB_PASS=${DB_PASSWORD}
     - DB_NAME=gitlabhq_production
     - DB_EXTENSION=pg_trgm
-
+    
   registry:
     restart: always
     image: registry:2.4.1
@@ -55,7 +55,7 @@ services:
     volumes:
     - /srv/docker/gitlab/gitlab:/home/git/data:Z
     - /srv/docker/gitlab/logs:/var/log/gitlab
-    - /srv/docker/gitlab/certs:/certs 
+    - /srv/docker/gitlab/certs:/certs
     environment:
     - GITLAB_REGISTRY_ENABLED=true
     - GITLAB_REGISTRY_HOST=${REGISTRY_HOST}
@@ -69,7 +69,7 @@ services:
     - SSL_KEY_PATH=/certs/registry-auth.key
     - SSL_CERTIFICATE_PATH=/certs/registry-auth.crt
     - SSL_DHPARAM_PATH=/certs/dhparam.pem
-    
+
     - GITLAB_REGISTRY_CERT_PATH=/certs/registry-auth.crt
     - GITLAB_REGISTRY_KEY_PATH=/certs/registry-auth.key
 
@@ -81,8 +81,8 @@ services:
     - DB_ADAPTER=postgresql
     - DB_HOST=postgresql
     - DB_PORT=5432
-    - DB_USER=gitlab
-    - DB_PASS=password
+    - DB_USER=${DB_USER}
+    - DB_PASS=${DB_PASSWORD}
     - DB_NAME=gitlabhq_production
 
     - REDIS_HOST=redis
@@ -93,14 +93,17 @@ services:
 
     - GITLAB_HOST=${GITLAB_HOST}
     - GITLAB_PORT=443
+
     - GITLAB_SSH_PORT=10022
     - GITLAB_RELATIVE_URL_ROOT=
+
     - GITLAB_SECRETS_DB_KEY_BASE=${GITLAB_SECRETS_BASE}
     - GITLAB_SECRETS_SECRET_KEY_BASE=${GITLAB_SECRETS_BASE}
     - GITLAB_SECRETS_OTP_KEY_BASE=${GITLAB_SECRETS_BASE}
 
     - GITLAB_SHARED_RUNNERS_REGISTRATION_TOKEN=${RUNNER_TOKEN}
     - GITLAB_ROOT_PASSWORD=${ROOT_PASSWORD}
+
     - GITLAB_ROOT_EMAIL=
 
     - GITLAB_NOTIFY_ON_BROKEN_BUILDS=true
