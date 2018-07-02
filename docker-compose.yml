@@ -89,7 +89,7 @@ services:
     - REDIS_PORT=6379
 
     - TZ=Asia/Kolkata
-    - GITLAB_TIMEZONE=Kolkata
+    - GITLAB_TIMEZONE=UTC
 
     - GITLAB_HOST=${GITLAB_HOST}
     - GITLAB_PORT=443
