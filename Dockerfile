@@ -1,13 +1,13 @@
 FROM sameersbn/ubuntu:16.04.20180706
 LABEL maintainer="sameer@damagehead.com"
 
-ENV GITLAB_VERSION=11.0.4 \
+ENV GITLAB_VERSION=11.1.0 \
     RUBY_VERSION=2.4 \
     GOLANG_VERSION=1.10.3 \
     GITLAB_SHELL_VERSION=7.1.4 \
-    GITLAB_WORKHORSE_VERSION=4.3.1 \
-    GITLAB_PAGES_VERSION=0.9.1 \
-    GITALY_SERVER_VERSION=0.105.0 \
+    GITLAB_WORKHORSE_VERSION=5.0.0 \
+    GITLAB_PAGES_VERSION=1.0.0 \
+    GITALY_SERVER_VERSION=0.111.1 \
     GITLAB_USER="git" \
     GITLAB_HOME="/home/git" \
     GITLAB_LOG_DIR="/var/log/gitlab" \
@@ -39,7 +39,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv E1DD270288B4E60
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y supervisor logrotate locales curl \
       nginx openssh-server mysql-client postgresql-client redis-tools \
-      git-core ruby${RUBY_VERSION} python2.7 python-docutils nodejs yarn gettext-base \
+      git-core gnupg2 ruby${RUBY_VERSION} python2.7 python-docutils nodejs yarn gettext-base \
       libmysqlclient20 libpq5 zlib1g libyaml-0-2 libssl1.0.0 \
       libgdbm3 libreadline6 libncurses5 libffi6 \
       libxml2 libxslt1.1 libcurl3 libicu55 \
