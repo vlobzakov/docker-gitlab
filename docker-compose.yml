@@ -50,7 +50,7 @@ services:
     - postgresql
     ports:
     - "10080:80"
-    - "443:443"
+    - "${HTTPS_PORT}:443"
     - "10022:22"
     volumes:
     - /srv/docker/gitlab/gitlab:/home/git/data:Z
