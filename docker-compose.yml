@@ -24,7 +24,7 @@ services:
     restart: always
     image: registry:2.4.1
     ports:
-    - "5000:5000"
+    - "${REGISTRY_PORT}:5000"
     volumes:
     - /srv/docker/gitlab/gitlab/shared/registry:/registry
     - /srv/docker/gitlab/certs:/certs
@@ -59,8 +59,8 @@ services:
     environment:
     - GITLAB_REGISTRY_ENABLED=true
     - GITLAB_REGISTRY_HOST=${REGISTRY_HOST}
-    - GITLAB_REGISTRY_PORT=${HTTPS_PORT}
-    - GITLAB_REGISTRY_API_URL=https://registry:5000
+    - GITLAB_REGISTRY_PORT=${REGISTRY_PORT}
+    - GITLAB_REGISTRY_API_URL=https://registry:${REGISTRY_PORT}
     - GITLAB_REGISTRY_ISSUER=gitlab-issuer
 
     - GITLAB_HTTPS=true
