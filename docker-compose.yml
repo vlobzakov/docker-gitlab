@@ -30,7 +30,7 @@ services:
     - /srv/docker/gitlab/certs:/certs
     environment:
     - REGISTRY_LOG_LEVEL=info
-    - REGISTRY_AUTH_TOKEN_REALM=https://${GITLAB_HOST}/jwt/auth
+    - REGISTRY_AUTH_TOKEN_REALM=https://${GITLAB_HOST}:${HTTPS_PORT}/jwt/auth
     - REGISTRY_AUTH_TOKEN_SERVICE=container_registry
     - REGISTRY_AUTH_TOKEN_ISSUER=gitlab-issuer
     - REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE=/certs/registry/auth.crt
