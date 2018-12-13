@@ -24,13 +24,13 @@ services:
     restart: always
     image: registry:2.4.1
     ports:
-    - "5000:5000"
+    - "${REGISTRY_PORT}:5000"
     volumes:
     - /srv/docker/gitlab/gitlab/shared/registry:/registry
     - /srv/docker/gitlab/certs:/certs
     environment:
     - REGISTRY_LOG_LEVEL=info
-    - REGISTRY_AUTH_TOKEN_REALM=https://${GITLAB_HOST}/jwt/auth
+    - REGISTRY_AUTH_TOKEN_REALM=https://${GITLAB_HOST}:${HTTPS_PORT}/jwt/auth
     - REGISTRY_AUTH_TOKEN_SERVICE=container_registry
     - REGISTRY_AUTH_TOKEN_ISSUER=gitlab-issuer
     - REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE=/certs/registry/auth.crt
@@ -51,7 +51,7 @@ services:
     ports:
     - "10080:80"
     - "${HTTPS_PORT}:443"
-    - "10022:22"
+    - "${SSH_PORT}:22"
     volumes:
     - /srv/docker/gitlab/gitlab:/home/git/data:Z
     - /srv/docker/gitlab/logs:/var/log/gitlab
@@ -59,8 +59,8 @@ services:
     environment:
     - GITLAB_REGISTRY_ENABLED=true
     - GITLAB_REGISTRY_HOST=${REGISTRY_HOST}
-    - GITLAB_REGISTRY_PORT=${HTTPS_PORT}
-    - GITLAB_REGISTRY_API_URL=https://registry:5000
+    - GITLAB_REGISTRY_PORT=${REGISTRY_PORT}
+    - GITLAB_REGISTRY_API_URL=https://registry:${REGISTRY_PORT}
     - GITLAB_REGISTRY_ISSUER=gitlab-issuer
 
     - GITLAB_HTTPS=true
@@ -94,7 +94,7 @@ services:
     - GITLAB_HOST=${GITLAB_HOST}
     - GITLAB_PORT=${HTTPS_PORT}
 
-    - GITLAB_SSH_PORT=10022
+    - GITLAB_SSH_PORT=${SSH_PORT}
     - GITLAB_RELATIVE_URL_ROOT=
 
     - GITLAB_SECRETS_DB_KEY_BASE=${GITLAB_SECRETS_BASE}
