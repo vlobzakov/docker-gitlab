@@ -2,26 +2,15 @@ FROM ubuntu:xenial-20181113
 
 ARG BUILD_DATE
 ARG VCS_REF
-ARG VERSION=11.5.1
-
-LABEL \
-    maintainer="sameer@damagehead.com" \
-    org.label-schema.schema-version="1.0" \
-    org.label-schema.build-date=${BUILD_DATE} \
-    org.label-schema.name=gitlab \
-    org.label-schema.vendor=damagehead \
-    org.label-schema.url="https://github.com/sameersbn/docker-gitlab" \
-    org.label-schema.vcs-url="https://github.com/sameersbn/docker-gitlab.git" \
-    org.label-schema.vcs-ref=${VCS_REF} \
-    com.damagehead.gitlab.license=MIT
+ARG VERSION=11.5.3
 
 ENV GITLAB_VERSION=${VERSION} \
     RUBY_VERSION=2.5 \
     GOLANG_VERSION=1.10.5 \
-    GITLAB_WORKHORSE_VERSION=7.0.0 \
-    GITLAB_PAGES_VERSION=1.1.0 \
-    GITALY_SERVER_VERSION=0.125.1 \
     GITLAB_SHELL_VERSION=8.4.1 \
+    GITLAB_WORKHORSE_VERSION=7.1.3 \
+    GITLAB_PAGES_VERSION=1.3.1 \
+    GITALY_SERVER_VERSION=0.129.0 \
     GITLAB_USER="git" \
     GITLAB_HOME="/home/git" \
     GITLAB_LOG_DIR="/var/log/gitlab" \
@@ -71,6 +60,17 @@ RUN bash ${GITLAB_BUILD_DIR}/install.sh
 COPY assets/runtime/ ${GITLAB_RUNTIME_DIR}/
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod 755 /sbin/entrypoint.sh
+
+LABEL \
+    maintainer="sameer@damagehead.com" \
+    org.label-schema.schema-version="1.0" \
+    org.label-schema.build-date=${BUILD_DATE} \
+    org.label-schema.name=gitlab \
+    org.label-schema.vendor=damagehead \
+    org.label-schema.url="https://github.com/sameersbn/docker-gitlab" \
+    org.label-schema.vcs-url="https://github.com/sameersbn/docker-gitlab.git" \
+    org.label-schema.vcs-ref=${VCS_REF} \
+    com.damagehead.gitlab.license=MIT
 
 EXPOSE 22/tcp 80/tcp 443/tcp
 
