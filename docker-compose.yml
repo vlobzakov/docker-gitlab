@@ -56,6 +56,7 @@ services:
     - /srv/docker/gitlab/gitlab:/home/git/data:Z
     - /srv/docker/gitlab/logs:/var/log/gitlab
     - /srv/docker/gitlab/certs:/certs
+    - /srv/docker/gitlab/certs/gitlab/ca.crt:/etc/ssl/certs/ca.crt
     environment:
     - GITLAB_REGISTRY_ENABLED=true
     - GITLAB_REGISTRY_HOST=${REGISTRY_HOST}
