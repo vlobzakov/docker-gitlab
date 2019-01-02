@@ -49,7 +49,7 @@ services:
     - redis
     - postgresql
     ports:
-    - "10080:80"
+    - "80:80"
     - "${HTTPS_PORT}:443"
     - "${SSH_PORT}:22"
     volumes:
