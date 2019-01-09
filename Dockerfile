@@ -1,8 +1,8 @@
-FROM ubuntu:xenial-20181113
+FROM ubuntu:xenial-20181218
 
 ARG BUILD_DATE
 ARG VCS_REF
-ARG VERSION=11.6.0
+ARG VERSION=11.6.3
 
 ENV GITLAB_VERSION=${VERSION} \
     RUBY_VERSION=2.5 \
@@ -51,7 +51,7 @@ RUN apt-get update \
  && update-locale LANG=C.UTF-8 LC_MESSAGES=POSIX \
  && locale-gen en_US.UTF-8 \
  && DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales \
- && gem install --no-document bundler \
+ && gem install --no-document bundler -v 1.17.3 \
  && rm -rf /var/lib/apt/lists/*
 
 COPY assets/build/ ${GITLAB_BUILD_DIR}/

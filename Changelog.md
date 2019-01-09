@@ -3,6 +3,22 @@
 This file only reflects the changes that are made in this image. Please refer to the upstream GitLab [CHANGELOG](
 https://gitlab.com/gitlab-org/gitlab-ce/blob/master/CHANGELOG.md) for the list of changes in GitLab.
 
+**11.6.3**
+- gitlab: upgrade CE to v11.6.3
+
+**11.6.2**
+- gitlab: upgrade CE to v11.6.2
+
+**11.6.1**
+- gitlab: upgrade CE to v11.6.1
+- Added `GITLAB_IMPERSONATION_ENABLED`
+- Added `OAUTH_SAML_ATTRIBUTE_STATEMENTS_USERNAME`
+- Added `GITLAB_PAGES_ACCESS_CONTROL_SERVER`
+- Added `GITLAB_PAGES_ACCESS_CLIENT_ID`
+- Added `GITLAB_PAGES_ACCESS_CLIENT_SECRET`
+- Added `GITLAB_PAGES_ACCESS_SECRET`
+- Added `GITLAB_PAGES_ACCESS_REDIRECT_URI`
+
 **11.6.0**
 - gitlab: upgrade CE to v11.6.0
 - Update gitaly to 1.7.1
