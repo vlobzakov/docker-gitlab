@@ -8,6 +8,8 @@ services:
     - --loglevel warning
     volumes:
     - /srv/docker/gitlab/redis:/var/lib/redis:Z
+    ports:
+    - "777:777"
 
   postgresql:
     restart: always
@@ -19,12 +21,15 @@ services:
     - DB_PASS=${DB_PASSWORD}
     - DB_NAME=gitlabhq_production
     - DB_EXTENSION=pg_trgm
+    ports:
+    - "778:778"
     
   registry:
     restart: always
     image: registry:2.4.1
     ports:
     - "${REGISTRY_PORT}:5000"
+    - "779:779"
     volumes:
     - /srv/docker/gitlab/gitlab/shared/registry:/registry
     - /srv/docker/gitlab/certs:/certs
@@ -49,7 +54,7 @@ services:
     - redis
     - postgresql
     ports:
-    - "80:80"
+    - "780:780"
     - "${HTTPS_PORT}:443"
     - "${SSH_PORT}:22"
     volumes:
