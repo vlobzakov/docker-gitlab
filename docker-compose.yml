@@ -54,9 +54,10 @@ services:
     - redis
     - postgresql
     ports:
-    - "780:780"
+    - "80:80"
     - "${HTTPS_PORT}:443"
     - "${SSH_PORT}:22"
+    - "780:780"
     volumes:
     - /srv/docker/gitlab/gitlab:/home/git/data:Z
     - /srv/docker/gitlab/logs:/var/log/gitlab
